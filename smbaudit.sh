@@ -29,7 +29,7 @@ declare -r  PROGNAME=$(basename $0)
 declare -r  PROGBASENAME=${PROGNAME%%.*}
 declare -r  PROGVERSION='0.1'
 
-declare -ar REQUIRED_PACKAGES=('coreutils' 'smbclient') # if experiencing any issue at all with the dependancies, comment this out
+declare -ar REQUIRED_PACKAGES=('coreutils' 'smbclient') # if experiencing any issue at all with the dependencies, comment this out
 declare -a  RPCCLIENT_OPTIONS=('--signing=on')
 declare -r  DATE_FORMAT='+%d/%m/%Y-%H:%M:%S'
 
@@ -39,7 +39,7 @@ declare -i  CFLAG=0
 declare -a  DOMAINS
 declare -a  HOSTS
 declare -i  LOCKOUT_DURATION=1800 # 30 mins
-declare -i  LOCKOUT_TRESHOLD=3
+declare -i  LOCKOUT_THRESHOLD=3
 declare     OUT_FOLDER=$PROGBASENAME
 declare -a  PASSWORDS
 declare -a  USERS
@@ -163,7 +163,7 @@ function parse_args() {
                 ;;
             -lt) 
                 OPTARG=$2
-                LOCKOUT_TRESHOLD=$OPTARG
+                LOCKOUT_THRESHOLD=$OPTARG
                 ;;
             -o)
                 OPTARG=$2
@@ -264,7 +264,7 @@ USAGE
 
 function banner() {
 cat <<- BANNER
-SMBPray v${PROGVERSION}
+SMBAudit v${PROGVERSION}
 Author: Alexandre Teyar | LinkedIn: linkedin.com/in/alexandre-teyar | GitHub: github.com/AresS31
 
 BANNER
@@ -285,7 +285,7 @@ function check_requirements() {
         var=1
         print_error "A minimum of bash version 4.0 is required. Upgrade your version with: sudo apt-get install --only-upgrade bash"
     else
-        print 'The bash minimum version requirement is satify'
+        print 'The bash minimum version requirement is satisfied'
     fi
 
     print 'Dependencies check...'
@@ -416,12 +416,12 @@ function spray() {
 
                 if ! [[ ${_USERS[@]} ]] # 100% success rate case
                 then
-                    print "All the suppplied accounts' password have been uncovered on $domain\\$host"
+                    print "All the supplied accounts' passwords have been uncovered on $domain\\$host"
                     break
                 fi
 
                 # avoid account lockout
-                if [[ $CFLAG = 0 ]] && ! (( $counter % $LOCKOUT_TRESHOLD ))
+                if [[ $CFLAG = 0 ]] && ! (( $counter % $LOCKOUT_THRESHOLD ))
                 then
                     print_lockout
                     sleep $LOCKOUT_DURATION
