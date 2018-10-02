@@ -199,29 +199,30 @@ function parse_args() {
     if [[ $dflag = 0 ]]
     then
         var=1
-        printf "${PROGNAME}: missing mandatory option -- d|D|la\n"
+        printf "%s: missing mandatory option -- d|D|la\n" "${PROGNAME}"
     fi
 
     if [[ $hflag = 0 ]]
     then
         var=1
-        printf "${PROGNAME}: missing mandatory option -- h|H\n"
+        printf "%s: missing mandatory option -- h|H\n" "${PROGNAME}"
     fi
 
     if [[ $pflag = 0 ]]
     then
         var=1
-        printf "${PROGNAME}: missing mandatory option -- p|P|creds\n"
+        printf "%s: missing mandatory option -- p|P|creds\n" "${PROGNAME}"
     fi
 
     if [[ $uflag = 0 ]]
     then
         var=1
-        printf "${PROGNAME}: missing mandatory option -- u|U|creds\n"
+        printf "%s: missing mandatory option -- u|U|creds\n" "${PROGNAME}"
     fi
 
     if [[ $var = 1 ]]
     then
+        printf "%s: type help for more information\n" "${PROGNAME}"
         exit 1
     fi
 }
