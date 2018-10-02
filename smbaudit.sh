@@ -15,12 +15,10 @@
 #    limitations under the License.
 
 # TODO:
-# Package as a .deb?
-# Make the script bashate compliant / Add OS check before relying on dpkg to check for dependancies
-# Add support for IP ranges
-# Finish to write the usage and beautify the english
-# Mutual exclusive options
-# add option for an authentication file username password - for testing the domain once accounts are compromised
+# * Package as .deb
+# * Check the OS before checking for dependancies
+# * Add support for IP addresses/ranges
+# * Implement mutual exclusive options for the argpasrser
 
 # enable stricter programming rules (turns some bugs into errors)
 # set -Eeuo pipefail
@@ -84,9 +82,6 @@ function write_results_log() {
     printf "%s %s\n" "$(date "$DATE_FORMAT")" "$1" >> "${OUT_FOLDER}/${2}.log"
 }
 
-# Maybe improve with the new getopt
-# exclude options e.g. -la cant be used with -d
-# -lt and -ld dont work with --creds
 function parse_args() {
     local -i dflag=0
     local -i hflag=0
@@ -231,8 +226,6 @@ function parse_args() {
     fi
 }
 
-# add the lockout threshold/duration and local authentication options
-# maybe add -t and rename all the HOST to target and add -h for help
 function usage() {
 cat <<- USAGE
 
@@ -264,7 +257,7 @@ USAGE
 
 function banner() {
 cat <<- BANNER
-SMBAudit v${PROGVERSION}
+${PROGBASENAME^^} v${PROGVERSION}
 Author: Alexandre Teyar | LinkedIn: linkedin.com/in/alexandre-teyar | GitHub: github.com/AresS31
 
 BANNER
@@ -338,7 +331,7 @@ function spray() {
     local    var
     local    var1
     local    var2
-    local -i sflag=0 # enable verbose for successful and lockout attempts even when the verbose switch is disabled
+    local -i sflag=0 # enable verbose for the successful and lockout attempts (works even when verbose is disabled)
     local -a _PASSWORDS
     local -a _USERS  # create a local copy of USERS
 
@@ -392,7 +385,7 @@ function spray() {
 
                         write_results_log "${domain}\\${user}:${password} $isAdmin" "$host"
 
-                        # delete user entry and reindex the user list
+                        # delete the current user entry and reindex the _USERS list
                         if [[ $CFLAG = 0 ]]
                         then
                             unset _USERS[j]
