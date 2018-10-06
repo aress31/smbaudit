@@ -15,10 +15,11 @@
 #    limitations under the License.
 
 # TODO:
-# * Package as .deb
 # * Check the OS before checking for dependancies
 # * Add support for IP addresses/ranges
 # * Implement mutual exclusive options for the argpasrser
+# * Usage menu to finish
+# * Implement share spidering
 
 # enable stricter programming rules (turns some bugs into errors)
 # set -Eeuo pipefail
@@ -190,7 +191,7 @@ function parse_args() {
 
     if [[ $var = 1 ]]
     then
-        printf "%s: type help for more information\n" "${PROGNAME}"
+        printf "%s: type '%s --help' for more information\n" "${PROGNAME}" "${PROGNAME}"
         exit 1
     fi
 }
