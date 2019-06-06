@@ -211,13 +211,13 @@ Perform password spraying attacks. Spray and pray!
 
 Mandatory arguments:
     -c              credentials (format {username}:{password})
-    -C              file containing the credentials (one entry per line) or folder containing the files containing the credentials(s)
+    -C              file containing the credentials (one entry per line) or folder of files containing the credentials(s)
     -d              domain name
-    -D              file containing the domain name(s) (one entry per line) or folder containing the files containing the domain name(s)
+    -D              file containing the domain name(s) (one entry per line) or folder of files containing the domain name(s)
     -h              host
-    -H              file containing the host(s) (one entry per line) or folder containing the files containing the host(s)
+    -H              file containing the host(s) (one entry per line) or folder of files containing the host(s)
     -p              password
-    -P              file containing the password(s) (one entry per line) or folder containing the files containing the password(s)
+    -P              file containing the password(s) (one entry per line) or folder of files containing the password(s)
     -u              user
     -U              file containing the user(s) (one entry per line) or folder containing the files containing the user(s)
 
@@ -231,8 +231,8 @@ Lockout arguments:
 
 Optional arguments:
     -o              directory where the log files will be written to
-    -v              print every password guessing attempts
-    -vv             print every password guessing attempts and the script parameters details
+    -v              print every password guessing attempt
+    -vv             print every password guessing attempt and the script parameter details
     -V, --version   show the banner/version
 
 Examples:
@@ -369,7 +369,7 @@ function spray() {
 
                     printAttempt "$vFlag" "$var1" "$var2" "$var3"
 
-                    # we assume thats creds contains valid username:password
+                    # we assume that creds contain valid username:password
                     if [[ $CFLAG = true ]]
                     then
                         break
