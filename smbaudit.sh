@@ -315,9 +315,6 @@ function spray() {
     _PASSWORDS=(${PASSWORDS[@]})    
     _USERS=(${USERS[@]})
 
-    # to induce a delay between password guessing attemps for a same user
-    # nested looping as follows: password - user - domain - host
-            
     for domain in ${_DOMAINS[@]}
     do
         for host in ${_HOSTS[@]}
