@@ -202,6 +202,18 @@ function parseArgs() {
     fi
 }
 
+function banner() {
+    local -ar vars=('DOMAINS' 'HOSTS' 'PASSWORDS' 'USERS' 'LOCKOUT_DURATION' 'LOCKOUT_THRESHOLD' 'OUT_FOLDER' 'VERBOSE')
+
+cat <<- BANNER
+${PROGBASENAME^^} v${PROGVERSION}
+Author: Alexandre Teyar | LinkedIn: linkedin.com/in/alexandre-teyar | GitHub: github.com/AresS31
+
+BANNER
+
+    printDebug
+}
+
 function usage() {
 cat <<- USAGE
 
@@ -242,34 +254,17 @@ Examples:
 USAGE
 }
 
-function writeLocked()  {
-    if ! [[ -f "${OUT_FOLDER}/locked.log" ]]
+function logEvent()  {
+    local -r logfile="$1"
+
+    shift
+
+    if ! [[ -f "${OUT_FOLDER}/${logfile}.log" ]]
     then
-        mkdir -p "${OUT_FOLDER}/" && touch "${OUT_FOLDER}/locked.log"
+        mkdir -p "${OUT_FOLDER}/" && touch "${OUT_FOLDER}/${logfile}.log"
     fi
 
-    printf "%s %s\n" "$(date "$DATE_FORMAT")" "${@}" >> "${OUT_FOLDER}/locked.log"
-}
-
-function writeResult() { 
-    if ! [[ -f "${OUT_FOLDER}/$2" ]]
-    then
-        mkdir -p "${OUT_FOLDER}/" && touch "${OUT_FOLDER}/$2.log"
-    fi
-
-    printf "%s %s\n" "$(date "$DATE_FORMAT")" "$1" >> "${OUT_FOLDER}/${2}.log"
-}
-
-function banner() {
-    local -ar vars=('DOMAINS' 'HOSTS' 'PASSWORDS' 'USERS' 'LOCKOUT_DURATION' 'LOCKOUT_THRESHOLD' 'OUT_FOLDER' 'VERBOSE')
-
-cat <<- BANNER
-${PROGBASENAME^^} v${PROGVERSION}
-Author: Alexandre Teyar | LinkedIn: linkedin.com/in/alexandre-teyar | GitHub: github.com/AresS31
-
-BANNER
-
-    printDebug
+    printf "%s %s\n" "$(date "$DATE_FORMAT")" "${@}" >> "${OUT_FOLDER}/${logfile}.log"
 }
 
 function loadArray() {
@@ -349,7 +344,7 @@ function spray() {
 
                         if [[ $error = 'NT_STATUS_ACCOUNT_LOCKED_OUT' ]]
                         then
-                            writeLocked "${domain}\\${user}"
+                            logEvent "lockouts" "${domain}\\${user}"
                             vFlag=true
                         fi
                     else
@@ -364,7 +359,7 @@ function spray() {
                         fi
 
                         vFlag=true
-                        writeResult "${domain}\\${user}:${password} $isAdmin" "$host"
+                        logEvent "$host" "${domain}\\${user}:${password} $isAdmin"
                     fi
 
                     printAttempt "$vFlag" "$var1" "$var2" "$var3"
