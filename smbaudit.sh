@@ -25,7 +25,7 @@
 declare -gr PROGNAME=$(basename $0)
 declare -gr PROGBASENAME=${PROGNAME%%.*}
 declare -gr PROGDIR=$(dirname ${BASH_SOURCE[0]})
-declare -gr PROGVERSION=0.7dev
+declare -gr PROGVERSION=0.7
 
 declare -gr DATE_FORMAT='+%d/%m/%Y-%H:%M:%S'
 
