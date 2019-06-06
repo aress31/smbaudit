@@ -330,8 +330,6 @@ function spray() {
                     
                     isAdmin=false
 
-                    ((counter++))
-
                     var1="${host}:139"
                     var2="${domain}\\${user}:${password}"
 
@@ -363,6 +361,8 @@ function spray() {
                     fi
 
                     printAttempt "$vFlag" "$var1" "$var2" "$var3"
+
+                    ((counter++))
 
                     # we assume that creds contain valid username:password
                     if [[ $CFLAG = true ]]
