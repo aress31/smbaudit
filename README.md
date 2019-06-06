@@ -28,7 +28,7 @@ There are already multiple tools available with similar features to SMBAudit, fo
 
 So, is there actually a genuine need for yet another tool focusing on attacking the all-so-famous SMB protocol? 
 
-When performing tests from a Unix box with no access to the Internet, it can be a very tedious and time-consuming task to properly install different packages/tools along with their dependencies. Most of the tools available do not even implement features that I consider essential for my engagements. For instance:
+Installing different packages and/or tools along with their dependencies when performing penetration tests from a Unix box with no access to the Internet can be a very tedious and time-consuming task. This reason alone justifies the development of smbaudit which is supposed to work directly out of the box thanks to its minimal requirement needs. Furthermore, similar available tools do not implement  features that I consider essential for my engagements, as an example:
 * [CrackMapExec](https://github.com/byt3bl33d3r/CrackMapExec): Requires Python to be installed on the host system. The documentation even recommends running it in a Python virtual environment so as to not 'mess-up' the host system. Furthermore, CrackMapExec relies on numerous third-party dependencies such as Impacket. Without Internet access and the help of the `pip` utility, the installation process of CrackMapExec is not very straight-forward (according to my own personal experience).
 
 For the aforementioned reasons, I developed SMBAudit as a plug and play tool focused solely on SMB/RPC assessment. It is designed to work out-of-the-box and be compatible with a wide range of Unix-based systems.
