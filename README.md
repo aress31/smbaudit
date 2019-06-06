@@ -14,7 +14,7 @@
     </p>
 </p>
 
-SMBAudit allows users to perform various SMB-related attacks across multiple Active Directory (AD) domains or hosts. Supported features listed under the [Features](#Features) section.
+SMBAudit allows users to perform various SMB-related attacks across multiple Active Directory (AD) domains or hosts. Supported features are listed under the [Features](#Features) section.
 
 SMBAudit is written entirely in Bash (requires Bash version 4.0+) to provide compatibility with a wide range of linux/UNIX distributions. It has the added benefit of only relying on the following dependencies (packages):
 * [coreutils](http://www.gnu.org/software/coreutils/coreutils.html)
@@ -54,4 +54,4 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-   limitations under the License.
+limitations under the License.
