@@ -1,15 +1,12 @@
-<p align="center">
-    <h1 align="center"> SMBAudit </h1>
-    <p align="center">
-        <a href="https://www.gnu.org/software/bash/">
-            <img alt="language" src="https://img.shields.io/badge/Lang-Bash%204.2+-blue.svg">
-        </a>
-        <a href="https://opensource.org/licenses/Apache-2.0">
-            <img alt="license" src="https://img.shields.io/badge/License-Apache%202.0-red.svg">
-        </a>
-        <img alt="version" src="https://img.shields.io/badge/Version-0.7-green.svg">
-    </p>
-</p>
+# smbaudit
+
+<a href="https://www.gnu.org/software/bash/">
+    <img alt="language" src="https://img.shields.io/badge/Lang-Bash%204.2+-blue.svg">
+</a>
+<a href="https://opensource.org/licenses/Apache-2.0">
+    <img alt="license" src="https://img.shields.io/badge/License-Apache%202.0-red.svg">
+</a>
+<img alt="version" src="https://img.shields.io/badge/Version-0.7-green.svg">
 
 SMBAudit allows users to perform various SMB-related attacks across multiple Active Directory (AD) domains or hosts. Supported features are listed under the [Features](#Features) section.
 
